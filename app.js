@@ -22,20 +22,20 @@
   /* ==================== i18n ==================== */
   var SKILLS = {
     tr: [
-      'Bağımsız Denetim (KGK ve SPK Standartları)', 'Mali Müşavirlik ve Vergi Danışmanlığı',
+      'Bağımsız Denetim (KGK Standartları)', 'Mali Müşavirlik ve Vergi Danışmanlığı',
       'Vergi Planlaması ve Uyuşmazlık Çözümü', 'Muhasebe Sistemleri Kurulumu',
       'Kurumsallaşma Danışmanlığı', 'Finansal Raporlama ve Analiz',
-      'Konkordato ve Mali Yeniden Yapılandırma', 'Kriz Yönetimi',
-      'Sermaye Piyasası Denetimi', 'Mali Mevzuat ve Uyum',
-      'Kurumsal Yönetim', 'Risk Yönetimi'
+      'İç Denetim ve Risk Yönetimi', 'Konkordato ve Mali Yeniden Yapılandırma',
+      'Bordro ve Özlük İşlemleri', 'Mali Mevzuat ve Uyum',
+      'Kurumsal Yönetim', 'Dijital Muhasebe ve E-Dönüşüm'
     ],
     en: [
-      'Independent Auditing (KGK & SPK Standards)', 'Public Accounting & Tax Consultancy',
+      'Independent Auditing (KGK Standards)', 'Public Accounting & Tax Consultancy',
       'Tax Planning & Dispute Resolution', 'Accounting Systems Setup',
       'Corporate Structuring Advisory', 'Financial Reporting & Analysis',
-      'Concordat & Financial Restructuring', 'Crisis Management',
-      'Capital Markets Auditing', 'Financial Legislation & Compliance',
-      'Corporate Governance', 'Risk Management'
+      'Internal Audit & Risk Management', 'Concordat & Financial Restructuring',
+      'Payroll & HR Processes', 'Financial Legislation & Compliance',
+      'Corporate Governance', 'Digital Accounting & E-Transformation'
     ]
   };
   var TITLES = {
@@ -230,7 +230,7 @@
   /* ==================== tilt cards + hover glow ==================== */
   if (finePointer && !reduceMotion) {
     document.querySelectorAll('[data-tilt]').forEach(function (el) {
-      var maxTilt = el.classList.contains('portrait-tilt') ? 7 : 5;
+      var maxTilt = el.classList.contains('profil-card') ? 6 : 5;
       el.addEventListener('mousemove', function (e) {
         var b = el.getBoundingClientRect();
         var px = (e.clientX - b.left) / b.width;
@@ -245,7 +245,18 @@
         el.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)';
       });
     });
+
+    /* glow-only (no tilt) cards — follow cursor for the radial highlight */
+    document.querySelectorAll('[data-glow]').forEach(function (el) {
+      el.addEventListener('mousemove', function (e) {
+        var b = el.getBoundingClientRect();
+        el.style.setProperty('--mx', ((e.clientX - b.left) / b.width * 100) + '%');
+        el.style.setProperty('--my', ((e.clientY - b.top) / b.height * 100) + '%');
+      });
+    });
   }
+
+  /* advisory service cards: cursor glow handled by the [data-glow] loop above. */
 
   /* ==================== GSAP animations ==================== */
   if (!hasGSAP) { removePreloader(true); return; }
@@ -282,12 +293,9 @@
     var tl = gsap.timeline({ delay: 0.55, defaults: { ease: 'power4.out' } });
     tl.from('.hero .char', { yPercent: 115, duration: 1.1, stagger: 0.035 })
       .from('.hero-overline', { y: 24, autoAlpha: 0, duration: 0.8 }, '-=0.8')
-      .from('.hero-headline', { y: 28, autoAlpha: 0, duration: 0.8 }, '-=0.65')
+      .from('.hero-lead', { y: 28, autoAlpha: 0, duration: 0.8 }, '-=0.65')
       .from('.hero-ctas', { y: 24, autoAlpha: 0, duration: 0.7 }, '-=0.6')
-      .from('.hero-location', { y: 16, autoAlpha: 0, duration: 0.6 }, '-=0.5')
-      .from('.hero-portrait', { x: 50, autoAlpha: 0, duration: 1.2 }, '-=1.1')
-      .from('.portrait-seal', { scale: 0, rotation: -90, autoAlpha: 0, duration: 0.9, ease: 'back.out(1.6)' }, '-=0.7')
-      .from('.hero-stats .stat', { y: 30, autoAlpha: 0, duration: 0.8, stagger: 0.08 }, '-=0.8')
+      .from('.hero-strip-item', { y: 30, autoAlpha: 0, duration: 0.8, stagger: 0.08 }, '-=0.55')
       .from('.scroll-hint', { autoAlpha: 0, duration: 0.6 }, '-=0.4');
   }
 
@@ -336,6 +344,12 @@
   });
 
   if (reduceMotion) return;
+
+  // QA: render reveal content immediately so static captures show every section
+  if (isQA) {
+    gsap.set('[data-reveal], [data-reveal-group] > *', { autoAlpha: 1, y: 0 });
+    return;
+  }
 
   /* ----- generic reveals ----- */
   document.querySelectorAll('[data-reveal]').forEach(function (el) {
@@ -388,11 +402,7 @@
     scrollTrigger: { trigger: '.hero', start: '55% top', end: 'bottom top', scrub: 0.4 }
   });
 
-  /* ----- subtle parallax on portrait while scrolling ----- */
-  gsap.to('.hero-portrait', {
-    y: -60, ease: 'none',
-    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.5 }
-  });
+  /* ----- subtle parallax while scrolling ----- */
   gsap.to('.hero-content', {
     y: -30, autoAlpha: 0.35, ease: 'none',
     scrollTrigger: { trigger: '.hero', start: '30% top', end: 'bottom top', scrub: 0.5 }
@@ -414,8 +424,8 @@
       var d = document.createElement('pre');
       d.id = 'debugbox';
       d.textContent = ['UA: ' + navigator.userAgent,
-        rect('.container'), rect('.hero-inner'), rect('.portrait-tilt'),
-        rect('.portrait-frame'), rect('.portrait-frame img'), rect('.hero-stats')
+        rect('.container'), rect('.hero-inner'), rect('.hero-content'),
+        rect('.hero-lead'), rect('.hero-strip')
       ].join('\n');
       document.body.appendChild(d);
     }, 500);

@@ -17,8 +17,6 @@ Static site — plain HTML / CSS / vanilla JS, no build step. Libraries load fro
 | `style.css` | Design system & layout |
 | `scene.js` | Three.js gold particle backdrop |
 | `app.js` | Interactions: language toggle, smooth scroll, reveals, counters, cursor |
-| `profile_image_hd.jpg` | Hero portrait / social preview |
-| `profile_image_cutout.png` | Transparent-background portrait |
 
 ## Run locally
 Just open `index.html` in a browser, or serve the folder:
