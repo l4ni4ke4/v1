@@ -83,6 +83,9 @@
     var visible = Array.prototype.filter.call(
       document.querySelectorAll('[data-tr][data-en]'),
       function (el) {
+        // the hero slogan rotator manages its own opacity/transform — never let
+        // the lang cross-fade touch it, or all slogans flash visible at once.
+        if (el.classList.contains('hero-slogan')) return false;
         var r = el.getBoundingClientRect();
         return r.width > 0 && r.bottom > 0 && r.top < window.innerHeight;
       }
@@ -258,6 +261,26 @@
 
   /* advisory service cards: cursor glow handled by the [data-glow] loop above. */
 
+  /* ==================== hero slogan rotator ==================== */
+  (function () {
+    var wrap = document.getElementById('heroSlogans');
+    if (!wrap) return;
+    var slides = Array.prototype.slice.call(wrap.querySelectorAll('.hero-slogan'));
+    if (slides.length < 2 || reduceMotion) return;
+    var i = 0;
+    setInterval(function () {
+      if (document.hidden) return;
+      var cur = slides[i];
+      var next = slides[(i + 1) % slides.length];
+      cur.classList.remove('is-active');
+      cur.classList.add('is-leaving');
+      next.classList.add('is-active');
+      // clear the leaving state once it has slid out
+      setTimeout(function () { cur.classList.remove('is-leaving'); }, 650);
+      i = (i + 1) % slides.length;
+    }, 3600);
+  })();
+
   /* ==================== GSAP animations ==================== */
   if (!hasGSAP) { removePreloader(true); return; }
   gsap.registerPlugin(ScrollTrigger);
@@ -291,9 +314,9 @@
   function heroEntrance() {
     if (reduceMotion) return;
     var tl = gsap.timeline({ delay: 0.55, defaults: { ease: 'power4.out' } });
-    tl.from('.hero .char', { yPercent: 115, duration: 1.1, stagger: 0.035 })
+    tl.from('.hero .char', { yPercent: 40, autoAlpha: 0, duration: 1.0, stagger: 0.035 })
       .from('.hero-overline', { y: 24, autoAlpha: 0, duration: 0.8 }, '-=0.8')
-      .from('.hero-lead', { y: 28, autoAlpha: 0, duration: 0.8 }, '-=0.65')
+      .from('.hero-slogans', { y: 28, autoAlpha: 0, duration: 0.8 }, '-=0.65')
       .from('.hero-ctas', { y: 24, autoAlpha: 0, duration: 0.7 }, '-=0.6')
       .from('.hero-strip-item', { y: 30, autoAlpha: 0, duration: 0.8, stagger: 0.08 }, '-=0.55')
       .from('.scroll-hint', { autoAlpha: 0, duration: 0.6 }, '-=0.4');
@@ -425,7 +448,7 @@
       d.id = 'debugbox';
       d.textContent = ['UA: ' + navigator.userAgent,
         rect('.container'), rect('.hero-inner'), rect('.hero-content'),
-        rect('.hero-lead'), rect('.hero-strip')
+        rect('.hero-slogans'), rect('.hero-strip')
       ].join('\n');
       document.body.appendChild(d);
     }, 500);
