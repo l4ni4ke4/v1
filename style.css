@@ -100,7 +100,12 @@ button { font-family: inherit; background: none; border: none; color: inherit; c
 .preloader-name {
   font-family: var(--serif); font-weight: 300;
   font-size: clamp(34px, 6vw, 64px); letter-spacing: 0.02em;
-  color: var(--ivory); margin-bottom: 34px;
+  color: var(--ivory); margin-bottom: 14px;
+}
+.preloader-title {
+  font-size: clamp(10px, 1.4vw, 12px); font-weight: 600;
+  letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 34px;
 }
 .preloader-bar {
   width: min(320px, 60vw); height: 1px; margin: 0 auto 14px;

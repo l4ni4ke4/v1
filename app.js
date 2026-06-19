@@ -332,6 +332,7 @@
     gsap.timeline()
       .from('.preloader-mono', { y: 18, autoAlpha: 0, duration: 0.5, ease: 'power3.out' })
       .from('.preloader-name', { y: 26, autoAlpha: 0, duration: 0.6, ease: 'power3.out' }, '-=0.3')
+      .from('.preloader-title', { y: 16, autoAlpha: 0, duration: 0.5, ease: 'power3.out' }, '-=0.35')
       .to(state, {
         v: 100, duration: 1.15, ease: 'power2.inOut',
         onUpdate: function () {
